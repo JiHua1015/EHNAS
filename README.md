@@ -1,8 +1,12 @@
 # EHNAS: Efficient Hybrid Architecture Search via LLM-Based Space Pruning and Training-Free Evaluation
 
-[![Paper](https://img.shields.io/badge/Paper-EHNAS-blue)](https://github.com/yourusername/EHNAS)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.10+-orange.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Last Commit](https://img.shields.io/github/last-commit/JiHua1015/EHNAS)](https://github.com/JiHua1015/EHNAS/commits/main)
+[![Stars](https://img.shields.io/github/stars/JiHua1015/EHNAS?style=social)](https://github.com/JiHua1015/EHNAS/stargazers)
+[![Forks](https://img.shields.io/github/forks/JiHua1015/EHNAS?style=social)](https://github.com/JiHua1015/EHNAS/network/members)
+[![Issues](https://img.shields.io/github/issues/JiHua1015/EHNAS)](https://github.com/JiHua1015/EHNAS/issues)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 > **Efficient Hybrid Architecture Search via LLM-Based Space Pruning and Training-Free Evaluation**  
 > A novel neural architecture search framework that leverages Large Language Models (LLMs) to intelligently prune the search space and employs training-free metrics for efficient architecture evaluation.
@@ -517,8 +521,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions or collaborations:
 - **Email**: **We cannot provide it due to the double-blind study.**
-- **GitHub Issues**: [Create an issue](https://github.com/yourusername/EHNAS/issues)
-- **Project Page**: [https://yourproject.github.io](https://yourproject.github.io)
+- **GitHub Issues**: [Create an issue](https://github.com/JiHua1015/EHNAS/issues)
+- **Project Page**: [https://github.com/JiHua1015/EHNAS](https://github.com/JiHua1015/EHNAS)
 
 ---
 
