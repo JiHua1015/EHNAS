@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Paper Analysis Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .progress-ring circle {
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        .drop-zone-highlight {
+            border: 2px dashed #2C5EFF !important;
+            background: rgba(44, 94, 255, 0.05) !important;
+        }
+        .file-card {
+            transition: all 0.3s ease;
+        }
+        .file-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-[#F8F9FA] to-[#F1F3F5] min-h-screen">
+    <div class="w-full h-screen bg-white flex flex-col">
+        <div class="bg-white p-6 flex items-center justify-between border-b border-gray-200">
+            <div class="flex items-center">
+                <h1 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <iconify-icon icon="ph:file-text" class="text-[#6E3AFF] mr-3 text-3xl"></iconify-icon>
+                    PaperInsight
+                </h1>
+                <span class="ml-4 bg-[#EEF2FF] text-[#2C5EFF] px-3 py-1 rounded-full text-sm font-medium">深度学习架构分析平台</span>
+            </div>
+            
+            <div class="flex">
+                <div id="dropZone" class="glass-effect rounded-lg border-2 border-dashed border-gray-300 p-4 flex items-center justify-center cursor-pointer mr-3 w-64">
+                    <div class="text-center">
+                        <iconify-icon icon="mdi:file-upload-outline" class="text-[#6E3AFF] text-3xl"></iconify-icon>
+                        <p class="font-medium text-gray-700 mt-1">拖放文件到此处</p>
+                        <p class="text-xs text-gray-500 mt-1">支持PDF,DOCX,PPTX格式</p>
+                    </div>
+                </div>
+                <button id="selectFileBtn" class="bg-gradient-to-r from-[#2C5EFF] to-[#6E3AFF] text-white font-medium py-2 px-6 rounded-lg flex items-center hover:opacity-90 transition-opacity">
+                    <iconify-icon icon="mdi:file-plus" class="mr-2"></iconify-icon>
+                    选择文件
+                </button>
+            </div>
+        </div>
+
+        <div class="flex p-6">
+            <div class="w-2/5 pr-6">
+                <div class="mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+                        <iconify-icon icon="mdi:clipboard-list" class="mr-2"></iconify-icon>
+                        文件队列
+                    </h2>
+                    <div class="text-xs text-gray-500 mb-4" id="fileQueueCount">待分析论文列表 (0)</div>
+                </div>
+                
+                <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                </div>
+            </div>
+            
+            <div class="w-3/5 pl-6 border-l border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                    <iconify-icon icon="mdi:progress-upload" class="mr-2"></iconify-icon>
+                    处理进度
+                </h2>
+                
+                <div class="bg-gradient-to-br from-[#F8F9FF] to-[#F3F5FF] rounded-2xl p-8 flex flex-col items-center justify-center">
+                    <div class="relative w-64 h-64 mb-6">
+                        <svg class="progress-ring w-full h-full" viewBox="0 0 180 180">
+                            <circle 
+                                cx="90" cy="90" r="75" 
+                                stroke="#E6E8F0" 
+                                stroke-width="12" 
+                                fill="transparent"
+                            ></circle>
+                            <circle 
+                                id="progressCircle"
+                                cx="90" cy="90" r="75" 
+                                stroke="url(#progressGradient)"
+                                stroke-width="12"
+                                stroke-linecap="round"
+                                fill="transparent"
+                                stroke-dasharray="471.24" 
+                                stroke-dashoffset="471.24"
+                            ></circle>
+                            <defs>
+                                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#2C5EFF" />
+                                    <stop offset="100%" stop-color="#6E3AFF" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <div class="text-3xl font-bold text-[#2C5EFF]">0%</div>
+                            <div class="text-gray-500 mt-1">等待上传</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="font-medium text-gray-800 mb-1">当前文件:</div>
+                        <div class="text-lg font-semibold text-[#2D3748]">无</div>
+                        <div class="text-gray-500 text-sm mt-2"></div>
+                        
+                        <div class="mt-6 flex space-x-4">
+                            <button class="bg-gradient-to-r from-[#2C5EFF] to-[#2C5EFF] text-white font-medium py-2 px-6 rounded-lg flex items-center">
+                                <iconify-icon icon="mdi:pause" class="mr-2"></iconify-icon>
+                                暂停处理
+                            </button>
+                            <button id="skipBtn" class="border border-[#2C5EFF] text-[#2C5EFF] font-medium py-2 px-6 rounded-lg flex items-center">
+                                <iconify-icon icon="mdi:skip-next" class="mr-2"></iconify-icon>
+                                跳过当前
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚信息区 -->
+        <div class="border-t border-gray-200 py-3 px-6 text-xs text-gray-500 flex justify-end">
+            <div class="flex items-center">
+                <div class="mr-6">
+                    <span class="font-medium">作者联系方式:</span> 
+                    <a href="mailto:xx@xx.com" class="text-[#2C5EFF] hover:underline"></a>
+                </div>
+                <div>
+                    <span class="font-medium">源代码:</span> 
+                    <a href="https://github.com/JiHua1015" class="text-[#2C5EFF] hover:underline flex items-center">
+                        <iconify-icon icon="mdi:github" class="mr-1"></iconify-icon>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部报告区 -->
+        <div class="border-t border-gray-200 p-6">
+            <div class="cursor-pointer flex items-center justify-between" id="reportToggle">
+                <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                    <iconify-icon icon="mdi:clipboard-text-outline" class="mr-2"></iconify-icon>
+                    分析报告历史
+                </h2>
+                <iconify-icon icon="mdi:chevron-down" id="collapseIcon" class="text-gray-500 text-2xl transition-transform"></iconify-icon>
+            </div>
+            
+            <div class="mt-4 bg-gray-50 rounded-xl overflow-hidden" id="reportPanel" style="display: none;">
+                <div class="flex bg-[#F0F7FF] px-5 py-3 text-sm font-medium text-gray-700">
+                    <div class="w-40">时间</div>
+                    <div class="flex-1">文件名</div>
+                    <div class="w-32">状态</div>
+                    <div class="w-24">操作</div>
+                </div>
+                
+                <div class="max-h-60 overflow-y-auto">
+                    <!-- 报告历史将由JavaScript动态填充 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+                let fileQueue = [];
+        let currentUploadController = null;
+        let isUploading = false;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadReportHistory();
+            const skipBtn = document.getElementById('skipBtn');
+            skipBtn.addEventListener('click', () => {
+                if (currentUploadController) {
+                    currentUploadController.abort();
+                }
+            });
+
+            const selectFileBtn = document.getElementById('selectFileBtn');
+            const fileQueueContainer = document.querySelector('.space-y-4');
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.multiple = true;
+            fileInput.style.display = 'none';
+            fileInput.accept = '.pdf,.docx,.pptx';
+
+            selectFileBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', (event) => {
+                const files = event.target.files;
+                handleFiles(files);
+            });
+
+            function handleFiles(files) {
+                for (const file of files) {
+                    fileQueue.push(file);
+                }
+                updateFileQueueUI();
+                if (!isUploading && fileQueue.length > 0) {
+                    uploadFile(fileQueue[0]);
+                }
+            }
+
+            function updateFileQueueUI() {
+                fileQueueContainer.innerHTML = ''; // Clear existing queue
+                fileQueue.forEach((file, index) => {
+                    const fileCard = document.createElement('div');
+                    fileCard.className = 'file-card bg-white p-3 rounded-lg flex items-center justify-between shadow-sm';
+                    fileCard.innerHTML = `
+                        <div class="flex items-center">
+                            <iconify-icon icon="mdi:file-document-outline" class="text-xl text-gray-500 mr-3"></iconify-icon>
+                            <span class="font-medium text-sm text-gray-700">${file.name}</span>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-500" data-index="${index}">&times;</button>
+                    `;
+                    fileQueueContainer.appendChild(fileCard);
+                });
+
+                // Add remove functionality
+                fileQueueContainer.querySelectorAll('button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.currentTarget.dataset.index;
+                        fileQueue.splice(index, 1);
+                        updateFileQueueUI();
+                    });
+                });
+            }
+
+                        async function uploadFile(file) {
+                if (!file || isUploading) return;
+                isUploading = true;
+                currentUploadController = new AbortController();
+                const signal = currentUploadController.signal;
+
+                const progressCircle = document.getElementById('progressCircle');
+                const progressText = document.querySelector('.text-3xl.font-bold');
+                const progressStatus = document.querySelector('.text-gray-500.mt-1');
+                const currentFileName = document.querySelector('.text-lg.font-semibold');
+                const circumference = 2 * Math.PI * progressCircle.r.baseVal.value;
+                
+                // Reset UI for new file
+                progressCircle.style.strokeDashoffset = circumference;
+                currentFileName.textContent = file.name;
+                progressStatus.textContent = '正在上传文件...';
+                progressText.textContent = '0%';
+
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData,
+                        signal: signal
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`服务器错误: ${response.statusText}`);
+                    }
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+
+                    while (true) {
+                        const { value, done } = await reader.read();
+                        if (done) break;
+                        
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n\n');
+                        buffer = lines.pop(); // Keep the last, possibly incomplete line
+
+                        for (const line of lines) {
+                            if (line.startsWith('data:')) {
+                                const jsonString = line.substring(5).trim();
+                                if (jsonString) {
+                                    const data = JSON.parse(jsonString);
+
+                                    if (data.error) {
+                                        throw new Error(data.error);
+                                    }
+
+                                    const percentComplete = data.progress || 0;
+                                    const offset = circumference - percentComplete / 100 * circumference;
+                                    progressCircle.style.strokeDashoffset = offset;
+                                    progressText.textContent = `${Math.round(percentComplete)}%`;
+                                    progressStatus.textContent = data.status;
+
+                                    if (data.done) {
+                                        // Analysis is done, refresh the entire history to include the new report
+                                        loadReportHistory();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        console.log('Upload aborted by user.');
+                    } else {
+                        console.error('上传或分析失败:', error);
+                        progressStatus.textContent = `错误: ${error.message}`;
+                    }
+                                } finally {
+                    isUploading = false;
+                    // Move to the next file regardless of success or failure
+                    fileQueue.shift();
+                    updateFileQueueUI();
+                    // Brief pause before starting next file
+                    setTimeout(() => uploadFile(fileQueue[0]), 1000);
+                }
+            }
+
+            function loadReportHistory() {
+                fetch('/reports') // Fetch the full list of reports
+                    .then(response => response.json())
+                    .then(reports => {
+                        const reportPanel = document.getElementById('reportPanel');
+                        const reportListContainer = reportPanel.querySelector('.max-h-60');
+                        if (!reportListContainer) {
+                            console.error('Could not find the report list container');
+                            return;
+                        }
+                        reportListContainer.innerHTML = ''; // Clear only the list container
+
+                        if (reports && reports.length > 0) {
+                            reports.forEach(report => {
+                                const reportEntry = document.createElement('div');
+                                reportEntry.className = 'flex items-center px-5 py-4 text-sm text-gray-800 border-b border-gray-100';
+                                reportEntry.innerHTML = `
+                                    <div class="w-40">${report.timestamp}</div>
+                                    <div class="flex-1 font-medium">${report.original_filename}</div>
+                                    <div class="w-32"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">成功</span></div>
+                                    <div class="w-24"><a href="/download/${encodeURIComponent(report.report_filename)}" class="text-[#2C5EFF] hover:underline font-medium" download="${report.report_filename}">下载报告</a></div>
+                                `;
+                                reportListContainer.appendChild(reportEntry);
+                            });
+                        }
+                    }).catch(error => console.error('Error loading report history:', error));
+            }
+
+            // Toggle for report history
+            const reportToggle = document.getElementById('reportToggle');
+            const reportPanel = document.getElementById('reportPanel');
+            const collapseIcon = document.getElementById('collapseIcon');
+
+            reportToggle.addEventListener('click', () => {
+                if (reportPanel.style.display === 'none') {
+                    reportPanel.style.display = 'block';
+                    collapseIcon.style.transform = 'rotate(180deg)';
+                } else {
+                    reportPanel.style.display = 'none';
+                    collapseIcon.style.transform = 'rotate(0deg)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
