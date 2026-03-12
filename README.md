@@ -1,15 +1,17 @@
 # EHNAS: Efficient Hybrid Architecture Search via LLM-Based Space Pruning and Training-Free Evaluation
 
-[![Python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-%203.10-blue)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-1.10%2B-ee4c2c)](https://pytorch.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Last Commit](https://img.shields.io/github/last-commit/JiHua1015/EHNAS)](https://github.com/JiHua1015/EHNAS/commits/main)
-[![Stars](https://img.shields.io/github/stars/JiHua1015/EHNAS?style=social)](https://github.com/JiHua1015/EHNAS/stargazers)
-[![Forks](https://img.shields.io/github/forks/JiHua1015/EHNAS?style=social)](https://github.com/JiHua1015/EHNAS/network/members)
-[![Issues](https://img.shields.io/github/issues/JiHua1015/EHNAS)](https://github.com/JiHua1015/EHNAS/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![Status](https://img.shields.io/badge/Status-Research-success)](https://github.com/JiHua1015/EHNAS)
 
 > **Efficient Hybrid Architecture Search via LLM-Based Space Pruning and Training-Free Evaluation**  
 > A novel neural architecture search framework that leverages Large Language Models (LLMs) to intelligently prune the search space and employs training-free metrics for efficient architecture evaluation.
+
+**News (2026-02-17)**: 🎉Our paper has been accepted by *Expert Systems with Applications (ESWA)*. Congratulations to all authors!
+
+**Online**: https://doi.org/10.1016/j.eswa.2026.131751
 
 ---
 
@@ -499,7 +501,18 @@ def _get_fallback_analysis(self) -> Dict[str, Any]:
 
 ##  Citation
 
-If you find EHNAS useful in your research, please cite our paper:**We cannot provide it due to the double-blind study.**
+```bibtex
+@article{ZHANG2026131751,
+title = {EHNAS: Efficient hybrid architecture search via LLM-based space pruning and training-free evaluation},
+journal = {Expert Systems with Applications},
+volume = {317},
+pages = {131751},
+year = {2026},
+issn = {0957-4174},
+doi = {https://doi.org/10.1016/j.eswa.2026.131751},
+author = {Yichen Zhang and Ziyu Hu},
+}
+```
 
 ---
 
@@ -520,7 +533,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact
 
 For questions or collaborations:
-- **Email**: **We cannot provide it due to the double-blind study.**
+- **Email**: yichenz770@stumail.ysu.edu.cn
 - **GitHub Issues**: [Create an issue](https://github.com/JiHua1015/EHNAS/issues)
 - **Project Page**: [https://github.com/JiHua1015/EHNAS](https://github.com/JiHua1015/EHNAS)
 
